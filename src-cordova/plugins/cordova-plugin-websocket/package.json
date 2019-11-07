@@ -1,0 +1,92 @@
+{
+  "_args": [
+    [
+      "cordova-plugin-websocket",
+      "/home/aj/projects/trial-app/src-cordova"
+    ]
+  ],
+  "_from": "cordova-plugin-websocket@latest",
+  "_id": "cordova-plugin-websocket@0.12.2",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/cordova-plugin-websocket",
+  "_nodeVersion": "6.9.1",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/cordova-plugin-websocket-0.12.2.tgz_1485530024484_0.17655382910743356"
+  },
+  "_npmUser": {
+    "email": "knowledgecode@gmail.com",
+    "name": "knowledgecode"
+  },
+  "_npmVersion": "4.0.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "cordova-plugin-websocket",
+    "raw": "cordova-plugin-websocket",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-websocket/-/cordova-plugin-websocket-0.12.2.tgz",
+  "_shasum": "8de2593b20cc64150847e25261686df41d61fa39",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-websocket",
+  "_where": "/home/aj/projects/trial-app/src-cordova",
+  "author": {
+    "name": "KNOWLEDGECODE"
+  },
+  "bugs": {
+    "url": "https://github.com/knowledgecode/WebSocket-for-Android/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-websocket",
+    "platforms": [
+      "android"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova WebSocket Plugin for Android",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "8de2593b20cc64150847e25261686df41d61fa39",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-websocket/-/cordova-plugin-websocket-0.12.2.tgz"
+  },
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "gitHead": "f39be9cf01f8ee5b0329b341305f91525adce27c",
+  "homepage": "https://github.com/knowledgecode/WebSocket-for-Android#readme",
+  "keywords": [
+    "android",
+    "cordova",
+    "cordova-android",
+    "ecosystem:cordova",
+    "phonegap",
+    "websocket"
+  ],
+  "license": "Apache 2.0",
+  "maintainers": [
+    {
+      "name": "knowledgecode",
+      "email": "knowledgecode@gmail.com"
+    }
+  ],
+  "name": "cordova-plugin-websocket",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knowledgecode/WebSocket-for-Android.git"
+  },
+  "scripts": {},
+  "version": "0.12.2"
+}

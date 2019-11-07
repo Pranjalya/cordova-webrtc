@@ -1,0 +1,87 @@
+{
+  "_args": [
+    [
+      "cordova-call",
+      "/home/aj/projects/trial-app/src-cordova"
+    ]
+  ],
+  "_from": "cordova-call@latest",
+  "_id": "cordova-call@1.1.6",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/cordova-call",
+  "_nodeVersion": "8.11.2",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-call_1.1.6_1530791318223_0.8158730424720331"
+  },
+  "_npmUser": {
+    "email": "david@websitebeaver.com",
+    "name": "dmarcus"
+  },
+  "_npmVersion": "6.1.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "cordova-call",
+    "raw": "cordova-call",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-call/-/cordova-call-1.1.6.tgz",
+  "_shasum": "56d98c99312bbfbb8998a6cbb6710c9bd02a64b7",
+  "_shrinkwrap": null,
+  "_spec": "cordova-call",
+  "_where": "/home/aj/projects/trial-app/src-cordova",
+  "author": {
+    "name": "David Marcus"
+  },
+  "bugs": {
+    "url": "https://github.com/WebsiteBeaver/CordovaCall/issues"
+  },
+  "cordova": {
+    "id": "cordova-call",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova plugin that lets you use iOS CallKit UI and Android ConnectionService UI",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "fileCount": 9,
+    "integrity": "sha512-WjZXusWzeVSdBFsAt/cyOj5OH97VllvRh8snjtcAsg5ZgkrA4kRzKDNR7fTMxwzej/9LkmLhkgi2LxI8cgaI8g==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbPgWWCRA9TVsSAnZWagAAbaUP/j+uy0X0U1kNxfR1iOfU\nopsFPZAqSzJIS4Eek6CiYoV1X4o+IVP5rVpbNycA8d13HzFr4eG1s2wnIkso\nCpP2TLpP5pMy3CvWR8o0sK8wOf3L7vTI1+wrpU28j8Gd0q98OXduxE4Sul2r\nZbw1qcUn64qWQj3YcPyfnoackQGLo8z0YlaOBOBQtSpxwGLptbCEDDUMc73H\n18rzDsP+3vKmZWGXUX29XwratkXgBMHQUFBhhrN8h/CtqpL9AKqETpefqHpR\nb7o3tVLymGQ0IuOHPnOgtH/kgBB/F3FXGTyAobhm1HzcJ9Kxt/6xc323HMTO\nctrT89AlKkEfN+003bVqJKi0YRDWHYewm6/tkMm6MqF9afT2XT97D3BlCu3m\ngbUUxxfn3nMrfiGnF0u/cxF5R8oPl5Q5jt0Ihk7POANFmCrH5NQgwegbyW1Q\nZTjYkGaTGOAEtAK+XG7urnYf1l0+t/FGx6YOcv+qI45eFgWsnxzxrTNgccui\n/Di9gCWltBgg56327nSw/myiBlnVPwN+/1aEHVipTTX/q1YDWuHXk41UQxdm\ntTLArTT0x6B4zAkjY04cu3ESC662TfMCVZGiIS5v6VpXcpz5kFmoU/SntMGk\npbMMUDXZoDQCI8KupoMO3uqarojnt6+ExFGl1vnpJApbfN878XYTSTfoCrQc\nSviY\r\n=XY8S\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "56d98c99312bbfbb8998a6cbb6710c9bd02a64b7",
+    "tarball": "https://registry.npmjs.org/cordova-call/-/cordova-call-1.1.6.tgz",
+    "unpackedSize": 82781
+  },
+  "gitHead": "3b4845cdb0b54590349c4862956207877f5fab73",
+  "homepage": "https://github.com/WebsiteBeaver/CordovaCall",
+  "keywords": [
+    "cordova-android",
+    "cordova-ios",
+    "ecosystem:cordova"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "dmarcus",
+      "email": "david@websitebeaver.com"
+    }
+  ],
+  "name": "cordova-call",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebsiteBeaver/CordovaCall.git"
+  },
+  "version": "1.1.6"
+}

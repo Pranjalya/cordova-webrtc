@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+  id="cordova-plugin-health"
+  version="1.1.3">
+
+  <name>Cordova Health</name>
+
+  <description>
+    A plugin that abstracts fitness and health repositories like Apple HealthKit or Google Fit
+  </description>
+
+  <author>Dario Salvi, based on code by Eddy Verbruggen / Telerik and Carmelo Velardo</author>
+
+  <license>MIT</license>
+
+  <keywords>Health, HealthKit, Fit, Fitness, Google Fit</keywords>
+
+  <repo>https://github.com/dariosalvi78/cordova-plugin-health.git</repo>
+
+  <issue>https://github.com/dariosalvi78/cordova-plugin-health/issues</issue>
+
+  <engines>
+    <engine name="cordova" version=">=6.0.0"/>
+  </engines>
+
+
+  <!-- ios -->
+  <platform name="ios">
+
+    <js-module src="www/ios/HealthKit.js" name="HealthKit">
+      <clobbers target="window.plugins.healthkit" />
+    </js-module>
+    <js-module src="www/ios/health.js" name="health">
+      <clobbers target="navigator.health" />
+    </js-module>
+
+    <config-file target="config.xml" parent="/*">
+      <feature name="HealthKit">
+        <param name="ios-package" value="HealthKit"/>
+      </feature>
+    </config-file>
+
+    <!-- Commented this because it means you can't download/use the app on iOS devices that don't support Apple Health (e.g. iPad) -->
+    <!-- See https://github.com/dariosalvi78/cordova-plugin-health/issues/59 -->
+    <!-- <config-file target="*-Info.plist" parent="UIRequiredDeviceCapabilities">
+      <array>
+        <string>healthkit</string>
+      </array>
+    </config-file> -->
+
+    <!-- Usage description of Health, mandatory since iOS 10 -->
+    <preference name="HEALTH_READ_PERMISSION" default=" " />
+    <preference name="HEALTH_WRITE_PERMISSION" default=" " />
+    <config-file target="*-Info.plist" parent="NSHealthShareUsageDescription">
+      <string>$HEALTH_READ_PERMISSION</string>
+    </config-file>
+    <config-file target="*-Info.plist" parent="NSHealthUpdateUsageDescription">
+      <string>$HEALTH_WRITE_PERMISSION</string>
+    </config-file>
+
+    <config-file target="*/Entitlements-Debug.plist" parent="com.apple.developer.healthkit">
+      <true/>
+    </config-file>
+
+    <config-file target="*/Entitlements-Release.plist" parent="com.apple.developer.healthkit">
+      <true/>
+    </config-file>
+
+    <header-file src="src/ios/WorkoutActivityConversion.h"/>
+    <source-file src="src/ios/WorkoutActivityConversion.m"/>
+    <header-file src="src/ios/HKHealthStore+AAPLExtensions.h"/>
+    <source-file src="src/ios/HKHealthStore+AAPLExtensions.m"/>
+    <header-file src="src/ios/HealthKit.h"/>
+    <source-file src="src/ios/HealthKit.m"/>
+
+    <framework src="HealthKit.framework" weak="true" />
+  </platform>
+
+  <!-- android -->
+  <platform name="android">
+    <framework src="com.google.android.gms:play-services-fitness:$GMS_VERSION" />
+    <preference name="GMS_VERSION" default="16.0.1"/>
+
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+      <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+      <uses-permission android:name="android.permission.BODY_SENSORS" />
+    </config-file>
+
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="health">
+        <param name="android-package" value="org.apache.cordova.health.HealthPlugin" />
+      </feature>
+      <access origin="https://accounts.google.com/*" />
+    </config-file>
+
+    <source-file src="src/android/HealthPlugin.java" target-dir="src/org/apache/cordova/health/" />
+
+    <js-module src="www/android/health.js" name="health">
+      <clobbers target="navigator.health" />
+    </js-module>
+  </platform>
+
+</plugin>
