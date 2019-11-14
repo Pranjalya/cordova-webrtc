@@ -1,42 +1,33 @@
 <template>
   <div id="app">
-    <div id="nav">Created by <b>Pranjalya Tiwari</b></div>
-    <h1>Kaissa WebChat</h1>
-    <video id="yourVideo" autoplay muted playsinline></video>
-    <video id="friendsVideo" autoplay playsinline></video>
-    <br />
-    <button v-on:click="disconnectCall" v-if="callActive">Disconnect</button>
-    <br />
-    <br />
-    <p style="color: rgb(89, 178, 17)"><b>Your ID : <span style="color: rgb(10,10,10)">{{ yourId }}</span></b></p>
-    <p v-if="caller"><b>You are connected to <span style="color: rgb(141, 16, 224)"><i>{{ returnReceiver }}</i></span></b></p>
-    <div v-if="!callActive">
-      <h2>Contact List</h2>
+    <div class="notdisplaycall">
+      <video id="yourVideo" autoplay muted playsinline></video>
+      <video id="friendsVideo" autoplay playsinline></video>
       <br />
-      <div v-for="(user, index) in returnUsers" v-bind:key="index">
-        <div v-if="user.doc._id != yourId && user.doc.status == 'online'">
-          <span class="user" style>{{ user.doc._id }}</span>
-          <button class="call" v-on:click="callUser(user.doc._id)">Call</button>
-          <span v-if="user.doc.status == 'online'" class="dot"></span>
-        </div>
+      <button v-on:click="disconnectCall" v-if="callActive">Disconnect</button>
+      <br />
+      <br />
+      <div v-if="!callActive">
+        <h2>Contact List</h2>
         <br />
+        <div v-for="user in returnUsers" v-bind:key="user.index">
+          <div v-if="user.doc.status == 'online' && user.doc._id != yourId">
+            <span class="user" style>{{ user.doc._id }}</span>
+            <button class="call" v-on:click="callUser(user.doc._id)">Call</button>
+          </div>
+          <br />
+        </div>
       </div>
-      <div class="about">
-        <h3>How to Use</h3>
-        <p>Login with your unique ids that you enter at the time of loading, so oters can identify you.</p>
-        <p>Due to unavailabilty of Sockets in this particular server, try to enter same name, so as to avoid confusion.</p>
-        <p>Locate your friend's id, and place a call.</p>
+      <!--
+      <div class="displaycall" v-if="displayCaller && !callActive">
+        <div class="callername">{{ receiversId }}</div>
+        <div class="calling">Calling</div>
+        <div class="receiving" v-if="!calling">
+          <button v-on:click="callActive=true">Accept</button>
+          <button v-on:click="disconnectCall">Reject</button>
+        </div>
       </div>
-      <br />
-      <div class="about">
-        <h3>About</h3>
-        <p>You like it? It's available here! <a href="https://www.github.com/Pranjalya/cordova-webrtc">Github</a></p>
-        <p>It's unique because no relay mechanism has been used, as it is based on completely serverless architecture and caters a P2P connection.</p>
-	      <p>Want to know something more awesome? You both are connected to each other, directly! As you should be <span id='smilee'><b>;P</b></span></p>
-        <p>If it's laggy, it's better the second time around. Try reloading it.</p>
-        <p>Viewing online candidates service can be run locally, but can't be run on net as of now, due to Socket hosting requirements.</p>
-        <p>Hope you enjoy it!</p>
-      </div>
+      -->
     </div>
   </div>
 </template>
@@ -64,8 +55,7 @@ export default {
       receiversId: "",
       callActive: false,
       displayCaller: false,
-      calling: false,
-      caller: false
+      calling: false
     };
   },
 
@@ -90,26 +80,22 @@ export default {
         }
       ]
     };
-    this.receiversId = this.returnReceiver;
     this.pc = new RTCPeerConnection(this.servers);
     this.pc.onicecandidate = event =>
       event.candidate
         ? this.sendMessage(
             this.yourId,
-            this.returnReceiver,
             JSON.stringify({ ice: event.candidate })
           )
-        : (this.callActive = true);
+        : console.log("Sent All Ice");
     this.pc.onaddstream = event => (friendsVideo.srcObject = event.stream);
-    //  if (this.pc.connectionState == "disconnected") document.location.reload();
+    if (this.pc.connectionState == "disconnected") document.location.reload();
     this.changesMonitor();
-   // socket.emit("registerUser", this.yourId);
+    //  this.contactChangesMonitor();
   },
 
   created() {
-    while (this.yourId == '') {
-      this.yourId = prompt("Please enter your ID");
-    }
+    this.yourId = prompt("Enter your phone number.");
     // Database which stores all the global contacts and their activity status
     this.contacts = new PouchDB(
       "https://4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix:2d0f75eae437887122aec87b1225ad19a294f459beeb0a20fd69fb333cee4d4a@4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix.cloudantnosqldb.appdomain.cloud/rtcusers"
@@ -130,7 +116,7 @@ export default {
           this.contacts
             .put({
               _id: this.yourId,
-              status: "online",
+              status: "online"
             })
             .then(() => {
               console.log("User added.");
@@ -160,7 +146,7 @@ export default {
     },
 
     returnReceiver() {
-      return this.$store.getters.receiver;
+      return this.receiversId;
     }
   },
 
@@ -180,19 +166,41 @@ export default {
         .then(() =>
           this.sendMessage(
             this.yourId,
-            this.returnReceiver,
             JSON.stringify({ sdp: this.pc.localDescription })
           )
         );
     },
 
-    sendMessage(senderId, receiver, data) {
+    /*  sendMessage(senderId, data) {
+      console.log("Sending message", this.yourId);
+      this.localDB.get(this.yourId)
+        .then(doc => {
+          delete doc._rev;
+          doc.sender = senderId;
+          doc.message = data;
+          this.localDB.put(doc).then(()=>{ console.log("inserted after getting")}).catch(err => {});
+        })
+        .catch(err => {
+          if (err.status == 404) {
+            this.localDB
+              .put({
+                _id: this.yourId,
+                sender: senderId,
+                message: data
+              }).then(()=>{ console.log("inserted")}).catch(err => {});
+          }
+        });
+      //  var msg = this.database.push({ sender: senderId, message: data });
+      //  msg.remove();
+    },
+  */
+
+    sendMessage(senderId, data) {
       console.log("Sending message", this.yourId);
       this.localDB
         .post({
           sender: senderId,
-          receiver: receiver,
-          message: data,
+          message: data
         })
         .then(response => {
           console.log(response);
@@ -204,27 +212,9 @@ export default {
       console.log("Reading message with data", data);
       var msg = JSON.parse(data.doc.message);
       var sender = data.doc.sender;
-      var receiver = data.doc.receiver;
-      console.log(
-        "Sender: ",
-        sender,
-        "My ID: ",
-        this.yourId,
-        "Receiver = ",
-        receiver
-      );
+      console.log("Sender: ", sender, "My ID: ", this.yourId);
       if (sender != this.yourId) {
-        if (msg.closeConnection) {
-          navigator.mediaDevices.getUserMedia(
-            { audio: true, video: true },
-            stream => {
-              this.pc.removeStream(stream);
-            }
-          );
-          this.friendsVideo.srcObject = null;
-          this.callActive = false;
-          if (!this.callActive) document.location.reload();
-        } else if (msg.ice != undefined) {
+        if (msg.ice != undefined) {
           this.pc
             .addIceCandidate(new RTCIceCandidate(msg.ice))
             .catch(err => console.log(err));
@@ -238,7 +228,6 @@ export default {
             .then(() =>
               this.sendMessage(
                 this.yourId,
-                this.returnReceiver,
                 JSON.stringify({ sdp: this.pc.localDescription })
               )
             )
@@ -252,6 +241,11 @@ export default {
           this.callActive = true;
         }
         this.displayCaller = true;
+        if (msg.closeConnection) {
+          this.friendsVideo.srcObject = {};
+          this.callActive = false;
+          document.location.reload();
+        }
       }
     },
 
@@ -282,29 +276,36 @@ export default {
     },
 
     callUser(callee) {
-      this.caller = true;
-      console.log("Calling user with ", callee);
-      this.$store.dispatch("updateReceiver", callee);
-      console.log("R = ", this.returnReceiver);
+      console.log("Calling user");
+      this.receiversId = callee;
+      console.log("R = ", this.receiversId);
       this.showFriendsFace();
     },
 
     disconnectCall() {
-      this.sendMessage(
-        this.yourId,
-        this.returnReceiver,
-        JSON.stringify({ closeConnection: true })
-      );
-      setTimeout(() => document.location.reload(), 1500);
+      this.sendMessage(this.yourId, JSON.stringify({ closeConnection: true }));
       navigator.mediaDevices.getUserMedia(
         { audio: true, video: true },
         stream => {
           this.pc.removeStream(stream);
+          this.pc.close();
         }
       );
-      this.friendsVideo.srcObject = null;
+      this.friendsVideo.srcObject = {};
       this.callActive = false;
-      this.$store.dispatch("updateReceiver", "");
+      document.location.reload();
+    },
+
+    readChangeMessage(change) {
+      console.log(
+        "R = ",
+        this.receiversId,
+        "sender = ",
+        change.doc.sender,
+        "Computed R = ",
+        this.returnReceiver
+      );
+      if (change.doc.sender == this.receiversId) this.readMessage(change);
     },
 
     changesMonitor() {
@@ -316,12 +317,13 @@ export default {
           include_docs: true
         })
         .on("change", change => {
-          console.log(change.doc, this.returnReceiver);
-          if (change.doc.sender == this.returnReceiver)
-            this.readMessage(change);
-          else if (change.doc.receiver == this.yourId) {
-            if (change.doc.sender != this.yourId) this.readMessage(change);
-          }
+          console.log(
+            "Change - ",
+            change.doc.sender,
+            "R = ",
+            this.returnReceiver
+          );
+          this.readChangeMessage(change);
         })
         .on("error", error => {
           console.log("Change error", err);
@@ -335,17 +337,15 @@ export default {
           include_docs: true
         })
         .on("change", change => {
-          this.contacts
-            .allDocs({
-              include_docs: true,
-              attachments: true
-            })
-            .then(result => {
-              this.activeUsers = result.rows;
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          for (var i = 0; i < this.activeUsers.length; ++i) {
+            if (change.doc.sender == this.activeUsers[i].doc.sender) {
+              if (this.activeUsers[i].doc.status == "online")
+                this.activeUsers[i].doc.status = "offline";
+              else this.activeUsers[i].doc.status = "online";
+              newUser = false;
+            }
+          }
+          if (newUser) this.activeUsers.push(change);
         });
     }
   }
@@ -362,15 +362,6 @@ export default {
   margin: 10px auto;
   background-color: darkslategrey;
   z-index: 10;
-}
-
-#smilee {
-  color: rgb(202, 81, 81);
-  font: 12px;
-}
-
-h3 {
-  color: rgb(33, 119, 93);
 }
 
 .notdisplaycall {
@@ -398,17 +389,12 @@ h3 {
   }
 }
 
-.about {
-  color: rgb(8, 84, 128);
-  font-size: 17px;
-}
-
 video {
   background-color: #ddd;
   border-radius: 7px;
   margin: 10px 0px 0px 10px;
-  width: 380px;
-  height: 280px;
+  width: 320px;
+  height: 240px;
 }
 
 button {
@@ -472,14 +458,5 @@ button {
 .button:hover span:after {
   opacity: 1;
   right: 0;
-}
-
-.dot {
-  height: 10px;
-  width: 10px;
-  background-color: rgb(17, 209, 17);
-  border-radius: 50%;
-  margin: 5px;
-  display: inline-block;
 }
 </style>

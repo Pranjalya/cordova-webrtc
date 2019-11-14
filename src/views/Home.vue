@@ -1,18 +1,46 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <p>Welcome to chat! Press call to start chatting</p>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'home',
   components: {
-    HelloWorld
+    
+  },
+
+  data(){
+    return {}
+  },
+
+  methods: {
+
+  },
+
+  computed: {
+
+  },
+
+  mounted: {
+
   }
 }
 </script>
+
+<style scoped>
+video {
+  background-color: #ddd;
+  border-radius: 7px;
+  margin: 10px 0px 0px 10px;
+  width: 320px;
+  height: 240px;
+}
+button {
+  margin: 5px 0px 0px 10px !important;
+  width: 654px;
+}
+</style>
