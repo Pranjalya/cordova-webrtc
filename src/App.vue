@@ -1,14 +1,43 @@
 <template>
   <div id="app">
+    <div id="nav">Created by <b>Pranjalya Tiwari</b></div>
+    <h1>Kaissa WebChat</h1>
     <video id="yourVideo" autoplay muted playsinline></video>
     <video id="friendsVideo" autoplay playsinline></video>
     <br />
-    <button v-on:click="showFriendsFace" type="button" class="btn btn-primary btn-lg">
-      <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>Call
-    </button>
-    <button v-on:click="showMyFace">Display</button>
+    <button v-on:click="disconnectCall" v-if="callActive">Disconnect</button>
     <br />
-    <button v-on:click="disconnectCall">Disconnect</button>
+    <br />
+    <p style="color: rgb(89, 178, 17)"><b>Your ID : <span style="color: rgb(10,10,10)">{{ yourId }}</span></b></p>
+    <p v-if="caller"><b>You are connected to <span style="color: rgb(141, 16, 224)"><i>{{ returnReceiver }}</i></span></b></p>
+    <div v-if="!callActive">
+      <h2>Contact List</h2>
+      <br />
+      <div v-for="(user, index) in returnUsers" v-bind:key="index">
+        <div v-if="user.doc._id != yourId && user.doc.status == 'online'">
+          <span class="user" style>{{ user.doc._id }}</span>
+          <button class="call" v-on:click="callUser(user.doc._id)">Call</button>
+          <span v-if="user.doc.status == 'online'" class="dot"></span>
+        </div>
+        <br />
+      </div>
+      <div class="about">
+        <h3>How to Use</h3>
+        <p>Login with your unique ids that you enter at the time of loading, so oters can identify you.</p>
+        <p>Due to unavailabilty of Sockets in this particular server, try to enter same name, so as to avoid confusion.</p>
+        <p>Locate your friend's id, and place a call.</p>
+      </div>
+      <br />
+      <div class="about">
+        <h3>About</h3>
+        <p>You like it? It's available here! <a href="https://www.github.com/Pranjalya/cordova-webrtc">Github</a></p>
+        <p>It's unique because no relay mechanism has been used, as it is based on completely serverless architecture and caters a P2P connection.</p>
+	      <p>Want to know something more awesome? You both are connected to each other, directly! As you should be <span id='smilee'><b>;P</b></span></p>
+        <p>If it's laggy, it's better the second time around. Try reloading it.</p>
+        <p>Viewing online candidates service can be run locally, but can't be run on net as of now, due to Socket hosting requirements.</p>
+        <p>Hope you enjoy it!</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,14 +54,18 @@ export default {
     return {
       localDB: {},
       remoteDB: {},
+      contacts: {},
       pc: {},
-      database: {},
       yourVideo: {},
       friendsVideo: {},
       yourId: "",
       servers: {},
+      activeUsers: [],
       receiversId: "",
-      updated: false
+      callActive: false,
+      displayCaller: false,
+      calling: false,
+      caller: false
     };
   },
 
@@ -41,12 +74,9 @@ export default {
     this.remoteDB = new PouchDB(
       "https://4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix:2d0f75eae437887122aec87b1225ad19a294f459beeb0a20fd69fb333cee4d4a@4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix.cloudantnosqldb.appdomain.cloud/webrtc"
     );
-    // this.database = firebase.database().ref()
     this.startRep();
     this.yourVideo = document.getElementById("yourVideo");
     this.friendsVideo = document.getElementById("friendsVideo");
-    this.yourId = "Kvothe";
-    this.receiversId = "Denna";
     console.log("My ID : ", this.yourId);
     //Create an account on Viagenie (http://numb.viagenie.ca/), and replace {'urls': 'turn:numb.viagenie.ca','credential': 'websitebeaver','username': 'websitebeaver@email.com'} with the information from your account
     this.servers = {
@@ -60,24 +90,84 @@ export default {
         }
       ]
     };
-
+    this.receiversId = this.returnReceiver;
     this.pc = new RTCPeerConnection(this.servers);
     this.pc.onicecandidate = event =>
       event.candidate
         ? this.sendMessage(
             this.yourId,
+            this.returnReceiver,
             JSON.stringify({ ice: event.candidate })
           )
-        : console.log("Sent All Ice");
+        : (this.callActive = true);
     this.pc.onaddstream = event => (friendsVideo.srcObject = event.stream);
-    //  this.database.on('child_added', this.readMessage);
+    //  if (this.pc.connectionState == "disconnected") document.location.reload();
     this.changesMonitor();
+   // socket.emit("registerUser", this.yourId);
+  },
+
+  created() {
+    while (this.yourId == '') {
+      this.yourId = prompt("Please enter your ID");
+    }
+    // Database which stores all the global contacts and their activity status
+    this.contacts = new PouchDB(
+      "https://4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix:2d0f75eae437887122aec87b1225ad19a294f459beeb0a20fd69fb333cee4d4a@4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix.cloudantnosqldb.appdomain.cloud/rtcusers"
+    );
+    this.showMyFace();
+    // Adding user to the contacts
+    this.contacts
+      .get(this.yourId)
+      .then(doc => {
+        this.conatcts.put({
+          _id: this.yourId,
+          status: "online",
+          _rev: doc._rev
+        });
+      })
+      .catch(err => {
+        if (err.status == 404) {
+          this.contacts
+            .put({
+              _id: this.yourId,
+              status: "online",
+            })
+            .then(() => {
+              console.log("User added.");
+            })
+            .catch(err => {
+              console.log("User not added", err);
+            });
+        }
+      });
+    // Fetch all the users
+    this.contacts
+      .allDocs({
+        include_docs: true,
+        attachments: true
+      })
+      .then(result => {
+        this.activeUsers = result.rows;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
+  computed: {
+    returnUsers() {
+      return this.activeUsers;
+    },
+
+    returnReceiver() {
+      return this.$store.getters.receiver;
+    }
   },
 
   methods: {
     showMyFace() {
       navigator.mediaDevices
-        .getUserMedia({ audio: false, video: true })
+        .getUserMedia({ audio: true, video: true })
         .then(stream => (this.yourVideo.srcObject = stream))
         .then(stream => this.pc.addStream(stream))
         .catch(console.log);
@@ -90,60 +180,54 @@ export default {
         .then(() =>
           this.sendMessage(
             this.yourId,
+            this.returnReceiver,
             JSON.stringify({ sdp: this.pc.localDescription })
           )
         );
     },
 
-    sendMessage(senderId, data) {
+    sendMessage(senderId, receiver, data) {
       console.log("Sending message", this.yourId);
       this.localDB
-        .get(this.yourId)
-        .then(doc => {
-          if(!this.updated){
-            this.updated = true;
-           this.localDB.put({
-            _id: this.yourId,
-            sender: senderId,
-            message: data,
-            force: true
-          });
-          }
+        .post({
+          sender: senderId,
+          receiver: receiver,
+          message: data,
         })
-        .catch(err => {
-          if (err.status == 404) {
-            console.log("inside 404");
-            return this.localDB.put({
-              _id: this.yourId,
-              sender: senderId,
-              message: data,
-            });
-          } else if (err.status == 409 ) {
-            return this.localDB.put({
-              _id: this.yourId,
-              sender: senderId,
-              message: data,
-              force: true
-            });
-          } else {
-            console.log(err);
-          }
+        .then(response => {
+          console.log(response);
         })
-        .catch(err => {
-          console.log(err);
-        });
-      //  var msg = this.database.push({ sender: senderId, message: data });
-      //  msg.remove();
+        .catch(err => console.log(err));
     },
 
     readMessage(data) {
       console.log("Reading message with data", data);
       var msg = JSON.parse(data.doc.message);
       var sender = data.doc.sender;
-      console.log("Sender: ", sender, "My ID: ", this.yourId);
+      var receiver = data.doc.receiver;
+      console.log(
+        "Sender: ",
+        sender,
+        "My ID: ",
+        this.yourId,
+        "Receiver = ",
+        receiver
+      );
       if (sender != this.yourId) {
-        if (msg.ice != undefined) {
-          this.pc.addIceCandidate(new RTCIceCandidate(msg.ice));
+        if (msg.closeConnection) {
+          navigator.mediaDevices.getUserMedia(
+            { audio: true, video: true },
+            stream => {
+              this.pc.removeStream(stream);
+            }
+          );
+          this.friendsVideo.srcObject = null;
+          this.callActive = false;
+          if (!this.callActive) document.location.reload();
+        } else if (msg.ice != undefined) {
+          this.pc
+            .addIceCandidate(new RTCIceCandidate(msg.ice))
+            .catch(err => console.log(err));
           console.log("ICE candidate added");
         } else if (msg.sdp.type == "offer") {
           console.log("Offer recieved");
@@ -154,6 +238,7 @@ export default {
             .then(() =>
               this.sendMessage(
                 this.yourId,
+                this.returnReceiver,
                 JSON.stringify({ sdp: this.pc.localDescription })
               )
             )
@@ -163,7 +248,10 @@ export default {
         } else if (msg.sdp.type == "answer") {
           this.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
           console.log("Answer received");
+          this.calling = true;
+          this.callActive = true;
         }
+        this.displayCaller = true;
       }
     },
 
@@ -193,6 +281,32 @@ export default {
         });
     },
 
+    callUser(callee) {
+      this.caller = true;
+      console.log("Calling user with ", callee);
+      this.$store.dispatch("updateReceiver", callee);
+      console.log("R = ", this.returnReceiver);
+      this.showFriendsFace();
+    },
+
+    disconnectCall() {
+      this.sendMessage(
+        this.yourId,
+        this.returnReceiver,
+        JSON.stringify({ closeConnection: true })
+      );
+      setTimeout(() => document.location.reload(), 1500);
+      navigator.mediaDevices.getUserMedia(
+        { audio: true, video: true },
+        stream => {
+          this.pc.removeStream(stream);
+        }
+      );
+      this.friendsVideo.srcObject = null;
+      this.callActive = false;
+      this.$store.dispatch("updateReceiver", "");
+    },
+
     changesMonitor() {
       console.log("Change Monitor started");
       this.remoteDB
@@ -202,34 +316,67 @@ export default {
           include_docs: true
         })
         .on("change", change => {
-          //  console.log("Change - ", change);
-          if (change.id == this.receiversId) 
+          console.log(change.doc, this.returnReceiver);
+          if (change.doc.sender == this.returnReceiver)
             this.readMessage(change);
+          else if (change.doc.receiver == this.yourId) {
+            if (change.doc.sender != this.yourId) this.readMessage(change);
+          }
         })
         .on("error", error => {
           console.log("Change error", err);
         });
-    },
 
-    disconnectCall() {
-      this.pc.close();
-      this.localDB.get(this.yourId)
-        .then(doc => {
-          doc._deleted = true;
-          return this.localDB.put(doc);
+      var newUser = true;
+      this.contacts
+        .changes({
+          since: "now",
+          live: true,
+          include_docs: true
         })
-        .then(function(result) {})
-        .catch(function(err) {
-          console.log(err);
+        .on("change", change => {
+          this.contacts
+            .allDocs({
+              include_docs: true,
+              attachments: true
+            })
+            .then(result => {
+              this.activeUsers = result.rows;
+            })
+            .catch(err => {
+              console.log(err);
+            });
         });
-      this.updated = false;
-      this.pc = new RTCPeerConnection(this.servers);
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.displaycall {
+  font-family: "Helvetica";
+  text-align: center;
+  height: 100%;
+  color: blanchedalmond;
+  width: 100%;
+  margin: 10px auto;
+  background-color: darkslategrey;
+  z-index: 10;
+}
+
+#smilee {
+  color: rgb(202, 81, 81);
+  font: 12px;
+}
+
+h3 {
+  color: rgb(33, 119, 93);
+}
+
+.notdisplaycall {
+  z-index: 8;
+}
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -251,16 +398,88 @@ export default {
   }
 }
 
+.about {
+  color: rgb(8, 84, 128);
+  font-size: 17px;
+}
+
 video {
   background-color: #ddd;
   border-radius: 7px;
   margin: 10px 0px 0px 10px;
-  width: 320px;
-  height: 240px;
+  width: 380px;
+  height: 280px;
 }
 
 button {
-  margin: 5px 0px 0px 10px !important;
-  width: 654px;
+  text-decoration: none;
+  color: white;
+  padding: 10px 30px;
+  display: inline-block;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.21);
+  border-bottom: 4px solid rgba(0, 0, 0, 0.21);
+  border-radius: 4px;
+  margin-left: 10px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(27, 188, 194, 1);
+  background: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(rgba(27, 188, 194, 1)),
+    to(rgba(24, 163, 168, 1))
+  );
+  background: -webkit-linear-gradient(
+    rgba(27, 188, 194, 1) 0%,
+    rgba(24, 163, 168, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    rgba(27, 188, 194, 1) 0%,
+    rgba(24, 163, 168, 1) 100%
+  );
+  background: -o-linear-gradient(
+    rgba(27, 188, 194, 1) 0%,
+    rgba(24, 163, 168, 1) 100%
+  );
+  background: linear-gradient(
+    rgba(27, 188, 194, 1) 0%,
+    rgba(24, 163, 168, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1bbcc2', endColorstr='#18a3a8', GradientType=0);
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: "\00bb";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: rgb(17, 209, 17);
+  border-radius: 50%;
+  margin: 5px;
+  display: inline-block;
 }
 </style>
