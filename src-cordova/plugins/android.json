@@ -32,10 +32,16 @@
     },
     "cordova-plugin-device": {
       "PACKAGE_NAME": "com.vue.health.app"
+    },
+    "cordova-plugin-local-notification": {
+      "PACKAGE_NAME": "com.vue.health.app"
     }
   },
   "dependent_plugins": {
     "es6-promise-plugin": {
+      "PACKAGE_NAME": "com.vue.health.app"
+    },
+    "cordova-plugin-badge": {
       "PACKAGE_NAME": "com.vue.health.app"
     }
   }

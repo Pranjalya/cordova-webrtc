@@ -11,10 +11,6 @@
     <feature name="Camera">
         <param name="android-package" value="org.apache.cordova.camera.CameraLauncher" />
     </feature>
-    <feature name="CordovaCall">
-        <param name="android-package" value="com.dmarc.cordovacall.CordovaCall" />
-        <param name="onload" value="true" />
-    </feature>
     <feature name="Permissions">
         <param name="android-package" value="com.android.plugins.Permissions" />
     </feature>
@@ -27,6 +23,12 @@
     <feature name="Device">
         <param name="android-package" value="org.apache.cordova.device.Device" />
     </feature>
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
+    <feature name="Badge">
+        <param name="android-package" value="de.appplant.cordova.plugin.badge.Badge" />
+    </feature>
     <name>MillennialsHealth</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -35,8 +37,8 @@
         Apache Cordova Team
     </author>
     <hook src="../node_modules/vue-cli-plugin-cordova/serve-config-hook.js" type="after_prepare" />
-    <content src="https://192.168.2.8:8080" />
-    <allow-navigation href="https://192.168.2.8:8080" />
+    <content src="https://192.168.2.10:8080" />
+    <allow-navigation href="https://192.168.2.10:8080" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

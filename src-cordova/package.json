@@ -1,6 +1,6 @@
 {
-  "name": "com.vue.health.app",
-  "displayName": "MillennialsHealth",
+  "name": "com.vue.cordovawebrtc.app",
+  "displayName": "KaissaWebChat",
   "version": "1.0.0",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "main": "index.js",
@@ -18,6 +18,7 @@
     "cordova-call": "^1.1.6",
     "cordova-ios": "^5.0.1",
     "cordova-plugin-android-permissions": "^1.0.2",
+    "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-camera": "^4.1.0",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-health": "^1.1.3",
@@ -41,7 +42,8 @@
       "cordova-call": {},
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-websocket": {},
-      "cordova-plugin-device": {}
+      "cordova-plugin-device": {},
+      "cordova-plugin-local-notification": {}
     },
     "platforms": [
       "android",

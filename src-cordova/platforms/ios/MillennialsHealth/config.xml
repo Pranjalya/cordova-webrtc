@@ -32,6 +32,12 @@
     <feature name="Device">
         <param name="ios-package" value="CDVDevice" />
     </feature>
+    <feature name="Badge">
+        <param name="ios-package" value="APPBadge" />
+    </feature>
+    <feature name="LocalNotification">
+        <param name="ios-package" value="APPLocalNotification" />
+    </feature>
     <name>MillennialsHealth</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.

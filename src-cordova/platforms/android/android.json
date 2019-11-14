@@ -25,10 +25,6 @@
               "count": 1
             },
             {
-              "xml": "<feature name=\"CordovaCall\"><param name=\"android-package\" value=\"com.dmarc.cordovacall.CordovaCall\" /><param name=\"onload\" value=\"true\" /></feature>",
-              "count": 1
-            },
-            {
               "xml": "<feature name=\"Permissions\"><param name=\"android-package\" value=\"com.android.plugins.Permissions\" /></feature>",
               "count": 1
             },
@@ -42,6 +38,10 @@
             },
             {
               "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"LocalNotification\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.localnotification.LocalNotification\" /></feature>",
               "count": 1
             }
           ]
@@ -67,18 +67,6 @@
               "count": 1
             },
             {
-              "xml": "<uses-permission android:name=\"android.permission.BIND_TELECOM_CONNECTION_SERVICE\" />",
-              "count": 1
-            },
-            {
-              "xml": "<uses-permission android:name=\"android.permission.CALL_PHONE\" />",
-              "count": 1
-            },
-            {
-              "xml": "<uses-permission android:name=\"android.permission.MANAGE_OWN_CALLS\" />",
-              "count": 1
-            },
-            {
               "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
               "count": 1
             }
@@ -91,7 +79,19 @@
           ],
           "/manifest/application": [
             {
-              "xml": "<service android:name=\"com.dmarc.cordovacall.MyConnectionService\" android:permission=\"android.permission.BIND_TELECOM_CONNECTION_SERVICE\"><intent-filter><action android:name=\"android.telecom.ConnectionService\" /></intent-filter></service>",
+              "xml": "<provider android:authorities=\"${applicationId}.provider\" android:exported=\"false\" android:grantUriPermissions=\"true\" android:name=\"de.appplant.cordova.plugin.notification.util.AssetProvider\"><meta-data android:name=\"android.support.FILE_PROVIDER_PATHS\" android:resource=\"@xml/localnotification_provider_paths\" /></provider>",
+              "count": 1
+            },
+            {
+              "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.TriggerReceiver\" />",
+              "count": 1
+            },
+            {
+              "xml": "<receiver android:exported=\"false\" android:name=\"de.appplant.cordova.plugin.localnotification.ClearReceiver\" />",
+              "count": 1
+            },
+            {
+              "xml": "<activity android:exported=\"false\" android:launchMode=\"singleInstance\" android:name=\"de.appplant.cordova.plugin.localnotification.ClickReceiver\" android:theme=\"@android:style/Theme.Translucent\" />",
               "count": 1
             }
           ],
@@ -111,6 +111,20 @@
             {
               "xml": "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\" />",
               "count": 1
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"Badge\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.badge.Badge\" /></feature>",
+              "count": 1
             }
           ]
         }
@@ -129,9 +143,6 @@
       "ANDROID_SUPPORT_V4_VERSION": "27.+",
       "PACKAGE_NAME": "com.vue.health.app"
     },
-    "cordova-call": {
-      "PACKAGE_NAME": "com.vue.health.app"
-    },
     "cordova-plugin-android-permissions": {
       "PACKAGE_NAME": "com.vue.health.app"
     },
@@ -145,6 +156,12 @@
       "PACKAGE_NAME": "com.vue.health.app"
     },
     "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.vue.health.app"
+    },
+    "cordova-plugin-badge": {
+      "PACKAGE_NAME": "com.vue.health.app"
+    },
+    "cordova-plugin-local-notification": {
       "PACKAGE_NAME": "com.vue.health.app"
     }
   },
@@ -191,14 +208,6 @@
       ]
     },
     {
-      "id": "cordova-call.CordovaCall",
-      "file": "plugins/cordova-call/www/CordovaCall.js",
-      "pluginId": "cordova-call",
-      "clobbers": [
-        "cordova.plugins.CordovaCall"
-      ]
-    },
-    {
       "id": "cordova-plugin-android-permissions.Permissions",
       "file": "plugins/cordova-plugin-android-permissions/www/permissions.js",
       "pluginId": "cordova-plugin-android-permissions",
@@ -235,17 +244,52 @@
       "clobbers": [
         "device"
       ]
+    },
+    {
+      "id": "cordova-plugin-badge.Badge",
+      "file": "plugins/cordova-plugin-badge/www/badge.js",
+      "pluginId": "cordova-plugin-badge",
+      "clobbers": [
+        "cordova.plugins.notification.badge"
+      ]
+    },
+    {
+      "id": "cordova-plugin-local-notification.LocalNotification",
+      "file": "plugins/cordova-plugin-local-notification/www/local-notification.js",
+      "pluginId": "cordova-plugin-local-notification",
+      "clobbers": [
+        "cordova.plugins.notification.local"
+      ]
+    },
+    {
+      "id": "cordova-plugin-local-notification.LocalNotification.Core",
+      "file": "plugins/cordova-plugin-local-notification/www/local-notification-core.js",
+      "pluginId": "cordova-plugin-local-notification",
+      "clobbers": [
+        "cordova.plugins.notification.local.core",
+        "plugin.notification.local.core"
+      ]
+    },
+    {
+      "id": "cordova-plugin-local-notification.LocalNotification.Util",
+      "file": "plugins/cordova-plugin-local-notification/www/local-notification-util.js",
+      "pluginId": "cordova-plugin-local-notification",
+      "merges": [
+        "cordova.plugins.notification.local.core",
+        "plugin.notification.local.core"
+      ]
     }
   ],
   "plugin_metadata": {
     "cordova-plugin-whitelist": "1.3.4",
     "cordova-plugin-health": "1.1.3",
     "cordova-plugin-camera": "4.1.0",
-    "cordova-call": "1.1.6",
     "cordova-plugin-android-permissions": "1.0.2",
     "es6-promise-plugin": "4.2.2",
     "phonegap-plugin-media-stream": "1.2.1",
     "cordova-plugin-websocket": "0.12.2",
-    "cordova-plugin-device": "2.0.3"
+    "cordova-plugin-device": "2.0.3",
+    "cordova-plugin-badge": "0.8.8",
+    "cordova-plugin-local-notification": "0.9.0-beta.2"
   }
 }
