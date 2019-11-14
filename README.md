@@ -1,5 +1,7 @@
 # Kaissa WebChat
 
+https://webrtc.kaissa.io
+
 ## Project setup
 
 1. Clone the repository using SVN or Git
