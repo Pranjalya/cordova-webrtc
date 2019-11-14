@@ -35,8 +35,8 @@
         Apache Cordova Team
     </author>
     <hook src="../node_modules/vue-cli-plugin-cordova/serve-config-hook.js" type="after_prepare" />
-    <content src="https://192.168.1.104:8080" />
-    <allow-navigation href="https://192.168.1.104:8080" />
+    <content src="https://192.168.2.8:8080" />
+    <allow-navigation href="https://192.168.2.8:8080" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
