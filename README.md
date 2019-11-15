@@ -1,28 +1,31 @@
-# health
+# Kaissa WebChat
+
+https://webrtc.kaissa.io
 
 ## Project setup
+
+1. Clone the repository using SVN or Git
 ```
-npm install
+git clone https://github.com/Pranjalya/cordova-webrtc.git
+cd cordova-webrtc
 ```
+
+2. Install dependencies
+```
+npm install --save
+```
+
+[OPTIONAL] For the code with Sockets, checkout *branch-2* instead of *master* branch
+
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run cordova-serve-browser
 ```
 
-### Compiles and minifies for production
+[OPTIONAL] If you checked out branch-2, run this command first.
 ```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
+node server.js
 ```
 
 ### Customize configuration
