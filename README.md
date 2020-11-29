@@ -1,6 +1,6 @@
 # Kaissa WebChat
 
-https://webrtc.kaissa.io
+https://pranjalya.github.io/cordova-webrtc
 
 ## Project setup
 
