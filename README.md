@@ -23,6 +23,14 @@ npm install --save
 npm run cordova-serve-browser
 ```
 
+### In Production
+```
+npm build cordova-serve-browser
+```
+
+* The relevant compiled files can be found in the `dist` directory.
+
+
 [OPTIONAL] If you checked out branch-2, run this command first.
 ```
 node server.js
