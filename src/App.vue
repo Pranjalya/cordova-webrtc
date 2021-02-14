@@ -1,42 +1,88 @@
 <template>
   <div id="app">
-    <div id="nav">Created by <b>Pranjalya Tiwari</b></div>
+    <div id="nav">
+      Created by
+      <b>Pranjalya Tiwari</b>
+    </div>
     <h1>Kaissa WebChat</h1>
-    <video id="yourVideo" autoplay muted playsinline></video>
-    <video id="friendsVideo" autoplay playsinline></video>
-    <br />
-    <button v-on:click="disconnectCall" v-if="callActive">Disconnect</button>
-    <br />
-    <br />
-    <p style="color: rgb(89, 178, 17)"><b>Your ID : <span style="color: rgb(10,10,10)">{{ yourId }}</span></b></p>
-    <p v-if="caller"><b>You are connected to <span style="color: rgb(141, 16, 224)"><i>{{ returnReceiver }}</i></span></b></p>
-    <div v-if="!callActive">
-      <h2>Contact List</h2>
+  <!-- <div v-if="yourId != '' && yourId != null">  -->
+    <div>
+      <div v-if="!mobile">
+        <video id="yourVideo" class="browservid" autoplay muted playsinline></video>
+        <video id="friendsVideo" class="browservid" autoplay playsinline></video>
+      </div>
+      <div v-if="mobile">
+        <video id="yourVideo" class="mobilevid" autoplay muted playsinline></video>
+        <video id="friendsVideo" class="mobilevid" autoplay playsinline></video>
+      </div>
       <br />
-      <div v-for="(user, index) in returnUsers" v-bind:key="index">
-        <div v-if="user.doc._id != yourId && user.doc.status == 'online'">
-          <span class="user" style>{{ user.doc._id }}</span>
-          <button class="call" v-on:click="callUser(user.doc._id)">Call</button>
-          <span v-if="user.doc.status == 'online'" class="dot"></span>
-        </div>
+      <button v-on:click="disconnectCall" v-if="callActive">Disconnect</button>
+      <br />
+      <br />
+      <p style="color: rgb(89, 178, 17)">
+        <b>
+          Your ID :
+          <span style="color: rgb(10,10,10)">{{ yourId }}</span>
+        </b>
+      </p>
+      <p v-if="caller">
+        <b>
+          You are connected to
+          <span style="color: rgb(141, 16, 224)">
+            <i>{{ returnReceiver }}</i>
+          </span>
+        </b>
+      </p>
+      <div v-if="!callActive">
+        <h2>Contact List</h2>
         <br />
+        <div v-for="(user, index) in returnUsers" v-bind:key="index">
+          <div v-if="user.doc._id != yourId && user.doc.status == 'online'">
+            <span class="user" style>{{ user.doc._id }}</span>
+            <button class="call" v-on:click="callUser(user.doc._id)">Call</button>
+            <span v-if="user.doc.status == 'online'" class="dot"></span>
+          </div>
+          <br />
+        </div>
       </div>
-      <div class="about">
-        <h3>How to Use</h3>
-        <p>Login with your unique ids that you enter at the time of loading, so oters can identify you.</p>
-        <p>Due to unavailabilty of Sockets in this particular server, try to enter same name, so as to avoid confusion.</p>
-        <p>Locate your friend's id, and place a call.</p>
+    </div>
+  <!--  <div v-else>
+      <p>Please enter your ID</p>
+      <div class="col-3 input-effect">
+        <input class="effect-20" type="text" placeholder v-model.lazy="yourId" />
+        <label>ID</label>
+        <span class="focus-border">
+          <i></i>
+        </span>
       </div>
-      <br />
-      <div class="about">
-        <h3>About</h3>
-        <p>You like it? It's available here! <a href="https://www.github.com/Pranjalya/cordova-webrtc">Github</a></p>
-        <p>It's unique because no relay mechanism has been used, as it is based on completely serverless architecture and caters a P2P connection.</p>
-	      <p>Want to know something more awesome? You both are connected to each other, directly! As you should be <span id='smilee'><b>;P</b></span></p>
-        <p>If it's laggy, it's better the second time around. Try reloading it.</p>
-        <p>Viewing online candidates service can be run locally, but can't be run on net as of now, due to Socket hosting requirements.</p>
-        <p>Hope you enjoy it!</p>
-      </div>
+    </div>  -->
+    <div class="about">
+      <h3>How to Use</h3>
+      <p>Login with your unique ids that you enter at the time of loading, so others can identify you.</p>
+      <p>Due to unavailabilty of Sockets in this particular server, try to enter same name, so as to avoid confusion.</p>
+      <p>Locate your friend's id, and place a call.</p>
+    </div>
+    <br />
+    <div class="about">
+      <h3>About</h3>
+      <p>
+        You like it? It's available here!
+        <a
+          href="https://www.github.com/Pranjalya/cordova-webrtc"
+        >Github</a>
+      </p>
+      <p>It's unique because no relay mechanism has been used, as it is based on completely serverless architecture and caters a P2P connection.</p>
+      <p>
+        Want to know something more awesome? You both are connected to each other, directly! As you should be
+        <span
+          id="smilee"
+        >
+          <b>;P</b>
+        </span>
+      </p>
+      <p>If it's laggy, it's better the second time around. Try reloading it.</p>
+      <p>Viewing online candidates service can be run locally, but can't be run on net as of now, due to Socket hosting requirements.</p>
+      <p>Hope you enjoy it!</p>
     </div>
   </div>
 </template>
@@ -45,8 +91,8 @@
 var PouchDB = require("pouchdb").default;
 
 document.addEventListener("deviceready", function() {
-  console.log("cordova.plugins.CordovaCall is now available");
-  var cordovaCall = cordova.plugins.CordovaCall; //not necessary, but might be more convenient
+    console.log("cordova.plugins.CordovaCall is now available");
+ // var cordovaCall = cordova.plugins.CordovaCall; //not necessary, but might be more convenient
 });
 
 export default {
@@ -65,7 +111,8 @@ export default {
       callActive: false,
       displayCaller: false,
       calling: false,
-      caller: false
+      caller: false,
+      mobile: false
     };
   },
 
@@ -78,6 +125,43 @@ export default {
     this.yourVideo = document.getElementById("yourVideo");
     this.friendsVideo = document.getElementById("friendsVideo");
     console.log("My ID : ", this.yourId);
+    this.contacts
+      .get(this.yourId)
+      .then(doc => {
+        this.conatcts.put({
+          _id: this.yourId,
+          status: "online",
+          _rev: doc._rev
+        });
+      })
+      .catch(err => {
+        if (err.status == 404) {
+          this.contacts
+            .put({
+              _id: this.yourId,
+              status: "online"
+            })
+            .then(() => {
+              console.log("User added.");
+            })
+            .catch(err => {
+              console.log("User not added", err);
+            });
+        }
+      });
+    // Fetch all the users
+    this.contacts
+      .allDocs({
+        include_docs: true,
+        attachments: true
+      })
+      .then(result => {
+        this.activeUsers = result.rows;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
     //Create an account on Viagenie (http://numb.viagenie.ca/), and replace {'urls': 'turn:numb.viagenie.ca','credential': 'websitebeaver','username': 'websitebeaver@email.com'} with the information from your account
     this.servers = {
       iceServers: [
@@ -103,55 +187,21 @@ export default {
     this.pc.onaddstream = event => (friendsVideo.srcObject = event.stream);
     //  if (this.pc.connectionState == "disconnected") document.location.reload();
     this.changesMonitor();
-   // socket.emit("registerUser", this.yourId);
+    // socket.emit("registerUser", this.yourId);
   },
 
   created() {
-    while (this.yourId == '') {
-      this.yourId = prompt("Please enter your ID");
-    }
+    this.mobile = this.isMobile();
+    console.log("This is mobile screen : ", this.mobile);
+
+    this.yourId = prompt("Enter your ID");
+
     // Database which stores all the global contacts and their activity status
     this.contacts = new PouchDB(
       "https://4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix:2d0f75eae437887122aec87b1225ad19a294f459beeb0a20fd69fb333cee4d4a@4f241480-c3c9-41c6-bb2e-98fd4cfe269e-bluemix.cloudantnosqldb.appdomain.cloud/rtcusers"
     );
     this.showMyFace();
     // Adding user to the contacts
-    this.contacts
-      .get(this.yourId)
-      .then(doc => {
-        this.conatcts.put({
-          _id: this.yourId,
-          status: "online",
-          _rev: doc._rev
-        });
-      })
-      .catch(err => {
-        if (err.status == 404) {
-          this.contacts
-            .put({
-              _id: this.yourId,
-              status: "online",
-            })
-            .then(() => {
-              console.log("User added.");
-            })
-            .catch(err => {
-              console.log("User not added", err);
-            });
-        }
-      });
-    // Fetch all the users
-    this.contacts
-      .allDocs({
-        include_docs: true,
-        attachments: true
-      })
-      .then(result => {
-        this.activeUsers = result.rows;
-      })
-      .catch(err => {
-        console.log(err);
-      });
   },
 
   computed: {
@@ -167,7 +217,7 @@ export default {
   methods: {
     showMyFace() {
       navigator.mediaDevices
-        .getUserMedia({ audio: true, video: true })
+        .getDisplayMedia({ audio: true, video: true })
         .then(stream => (this.yourVideo.srcObject = stream))
         .then(stream => this.pc.addStream(stream))
         .catch(console.log);
@@ -192,7 +242,7 @@ export default {
         .post({
           sender: senderId,
           receiver: receiver,
-          message: data,
+          message: data
         })
         .then(response => {
           console.log(response);
@@ -215,7 +265,7 @@ export default {
       );
       if (sender != this.yourId) {
         if (msg.closeConnection) {
-          navigator.mediaDevices.getUserMedia(
+          navigator.mediaDevices.getDisplayMedia(
             { audio: true, video: true },
             stream => {
               this.pc.removeStream(stream);
@@ -296,7 +346,7 @@ export default {
         JSON.stringify({ closeConnection: true })
       );
       setTimeout(() => document.location.reload(), 1500);
-      navigator.mediaDevices.getUserMedia(
+      navigator.mediaDevices.getDisplayMedia(
         { audio: true, video: true },
         stream => {
           this.pc.removeStream(stream);
@@ -347,12 +397,36 @@ export default {
               console.log(err);
             });
         });
+    },
+
+    isMobile() {
+      return (
+        typeof window.orientation !== "undefined" ||
+        navigator.userAgent.indexOf("IEMobile") !== -1
+      );
     }
   }
 };
+/*
+// JavaScript for label effects only
+$(window).load(function() {
+  $(".col-3 input").val("");
+  $(".input-effect input").focusout(function() {
+    if ($(this).val() != "") {
+      $(this).addClass("has-content");
+    } else {
+      $(this).removeClass("has-content");
+    }
+  });
+});
+*/
 </script>
 
 <style lang="scss" scoped>
+:focus {
+  outline: none;
+}
+
 .displaycall {
   font-family: "Helvetica";
   text-align: center;
@@ -396,6 +470,94 @@ h3 {
       color: #42b983;
     }
   }
+}
+
+.col-3 {
+  float: left;
+  width: 27.33%;
+  margin: 40px 3%;
+  position: relative;
+} /* necessary to give position: relative to parent. */
+input[type="text"] {
+  font: 15px/24px "Lato", Arial, sans-serif;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
+  letter-spacing: 1px;
+}
+
+.effect-20 {
+  border: 1px solid #ccc;
+  padding: 7px 14px;
+  transition: 0.4s;
+  background: transparent;
+}
+
+.effect-20 ~ .focus-border:before,
+.effect-20 ~ .focus-border:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #3399ff;
+  transition: 0.3s;
+}
+.effect-20 ~ .focus-border:after {
+  top: auto;
+  bottom: 0;
+  left: auto;
+  right: 0;
+}
+.effect-20 ~ .focus-border i:before,
+.effect-20 ~ .focus-border i:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 0;
+  background-color: #3399ff;
+  transition: 0.4s;
+}
+.effect-20 ~ .focus-border i:after {
+  left: auto;
+  right: 0;
+  top: auto;
+  bottom: 0;
+}
+.effect-20:focus ~ .focus-border:before,
+.effect-20:focus ~ .focus-border:after,
+.has-content.effect-20 ~ .focus-border:before,
+.has-content.effect-20 ~ .focus-border:after {
+  width: 100%;
+  transition: 0.3s;
+}
+.effect-20:focus ~ .focus-border i:before,
+.effect-20:focus ~ .focus-border i:after,
+.has-content.effect-20 ~ .focus-border i:before,
+.has-content.effect-20 ~ .focus-border i:after {
+  height: 100%;
+  transition: 0.4s;
+}
+.effect-20 ~ label {
+  position: absolute;
+  left: 14px;
+  width: 100%;
+  top: 10px;
+  color: #aaa;
+  transition: 0.3s;
+  z-index: -1;
+  letter-spacing: 0.5px;
+}
+.effect-20:focus ~ label,
+.has-content.effect-20 ~ label {
+  top: -18px;
+  left: 0;
+  font-size: 12px;
+  color: #3399ff;
+  transition: 0.3s;
 }
 
 .about {
